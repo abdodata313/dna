@@ -42,23 +42,19 @@ y_pred = model.predict(X_test)
 print("Daqat Al-Nomoozag (Accuracy):", accuracy_score(y_test, y_pred))
 print("\nTaqreer Al-Adaa:\n", classification_report(y_test, y_pred))
 
-!pip install streamlit scikit-learn pandas
-
 import numpy as np
 import pandas as pd
 import streamlit as st
 from sklearn.ensemble import RandomForestClassifier
 
-# إعداد واجهة الموقع
 st.set_page_config(page_title="تطبيق التنبؤ بالجينات", layout="centered")
 
 st.title("🧬 تطبيق التنبؤ بالحالة الجينية")
 st.write(
-    "أدخل بيانات التعبير الجيني للتنبؤ بالحالة الصحية (Control أم Treatment)"
+    "قم بإدخال بيانات التعبير الجيني للتنبؤ بالحالة (Control أو Treatment)"
 )
 
 
-# تحميل البيانات وتدريب النموذج
 @st.cache_data
 def load_and_train_model():
     df = pd.read_csv("Human_Gene_Data_Analysis_1000_Records.csv")
@@ -78,7 +74,6 @@ def load_and_train_model():
 
 model = load_and_train_model()
 
-# شريط المدخلات جانبيًا
 st.sidebar.header("مدخلات الجين")
 expression_level = st.sidebar.number_input(
     "Expression Level", value=500.0, step=10.0
@@ -91,7 +86,6 @@ p_value = st.sidebar.number_input(
     "Significance P-Value", value=0.01, step=0.001, format="%.6f"
 )
 
-# زر التنبؤ عرض النتائج
 if st.button("تنبؤ"):
     input_data = pd.DataFrame(
         [[expression_level, expression_log2, fold_change, p_value]],
@@ -106,5 +100,4 @@ if st.button("تنبؤ"):
     proba = model.predict_proba(input_data)[0]
 
     st.success(f"النتيجة المتوقعة: **{prediction}**")
-    st.info(f"نسبة الثقة: **{np.max(proba)*100:.2f}%**")
-
+    st.write(f"نسبة الثقة: **{np.max(proba)*100:.2f}%**")
